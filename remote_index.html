@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h4>채팅페이지 입니다.</h4>
+    <!-- 웹소켓으로 (유저->서버) 메세지 보내려면 -->
+    <button id="send" onclick="socket.send('hi')">메세지 보내기</button>
+    <p id="receivedMsg"></p>
+    <label for="inputId">아이디</label>
+    <input type="text" id="inputId"/><br>
+
+    <label for="inputPass">비밀번호</label>
+    <input type="text" id="inputPass"/>
+
+    <button id="sendBtn">보내기</button>
+
+    <script>
+        const inputId = document.querySelector("#inputId");
+        const inputPass = document.querySelector("#inputPass");
+        const sendBtn = document.querySelector("#sendBtn");
+
+        sendBtn.addEventListener('click', sendToWs);
+
+        const receivedMsg = document.querySelector('#receivedMsg');
+
+        //웹소켓 열어달라고 서버에게 부탁하는 코드
+        let socket = new WebSocket("ws://15.165.188.165:7228"); //이 html 페이지를 방문하는 자동으로 실행
+        socket.onopen = ()=>{
+            console.log("소켓 연결 완료");
+        }
+
+        socket.onmessage = function(e){ //서버로부터 메시지가 올 때, 이 이벤트가 실행
+        let message = JSON.parse(e.data);
+        receivedMsg.innerHTML = message.msg;
+        }
+
+        function sendToWs (){
+            const loginIdPass = {uid:inputId.value, upass:inputPass.value}
+            socket.send(JSON.stringify(loginIdPass));
+        }
+
+
+
+    </script>
+    
+</body>
+</html>
